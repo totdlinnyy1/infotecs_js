@@ -1,0 +1,10 @@
+:root {
+    --bg-color: #F6BD60;
+    --text-color: #000;
+    --table-color: #0B3C49;
+    --modal-window-color: #DB7F8E;
+
+    --roboto-font: 'Roboto Mono', monospace;
+    --light-weight: 300;
+    --regular-weight: 400;
+}
