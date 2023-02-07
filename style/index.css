@@ -9,3 +9,36 @@ body {
     font-family: var(--roboto-font);
     font-weight: var(--light-weight);
 }
+
+header {
+    height: 3rem;
+    width: 100%;
+    padding: 1rem;
+
+    display: flex;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 2rem;
+    font-weight: var(--regular-weight);
+}
+
+main {
+    max-width: 80%;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: center;
+}
+
+.select {
+    background-color: var(--table-color);
+    color: #fff;
+
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+
+    font-size: 0.8rem;
+}
