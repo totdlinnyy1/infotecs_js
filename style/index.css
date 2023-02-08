@@ -100,3 +100,8 @@ main {
     display: flex;
     justify-content: space-between;
 }
+
+.selected {
+    opacity: 0.6;
+    background-color: transparent;
+}
