@@ -71,4 +71,32 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    transition: background-color 0.2s ease-in;
+}
+
+.table__body__element:hover {
+    background-color: var(--modal-window-color);
+    position: relative;
+}
+
+.table__body__modal {
+    background-color: var(--modal-window-color);
+    width: 15rem;
+    min-height: 2rem;
+
+    padding: 1rem;
+
+    position: absolute;
+    top: -2px;
+    left: calc(100% + 2px);
+}
+
+.table__body__modal p{
+    margin-bottom: 1rem;
+}
+
+.table__body__modal__title {
+    display: flex;
+    justify-content: space-between;
 }
