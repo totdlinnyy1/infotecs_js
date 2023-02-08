@@ -47,7 +47,7 @@ main {
 }
 
 .table {
-    width: 10rem;
+    min-width: 20rem;
 
     border: 2px solid var(--table-color);
 }
@@ -63,7 +63,8 @@ main {
 }
 
 .table__body__element {
-    height: 2rem;
+    min-height: 2rem;
+    padding: 1rem;
 
     border-bottom: 2px solid var(--table-color);
 
