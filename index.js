@@ -8,6 +8,8 @@ const ratingColor = (rating) => {
   return 'red'
 }
 
+const deleteModals = () => document.querySelectorAll(".table__body__modal").forEach(modal => modal.remove())
+
 const showPopOut = (table_el, data) => {
   if (data.id !== selected_product) {
     selected_product = data.id
@@ -36,14 +38,21 @@ getProducts().then(data => {
   })
 })
 
-document.addEventListener('mousemove', e => {
-  if (e.target.className === 'table__body__element' || e.target.parenElement.className === 'table__body__element') {
-    let productId = e.target.getAttribute('data-id')
+table_body.addEventListener('mousemove', e => {
+  if (e.target.className === 'table__body__element' || e.target.parentElement.className === 'table__body__element') {
+    let productId = e.target.getAttribute('data-id') || e.target.parentElement.getAttribute('data-id')
     productId = parseInt(productId)
-    const product = products.find(p => p.id === productId)
-    showPopOut(e.target, product)
-  } else {
+    if (selected_product !== productId) {
+      deleteModals()
+      const product = products.find(p => p.id === productId)
+      showPopOut(e.target, product)
+    }
+  }
+})
+
+table_body.addEventListener('mouseleave', (e) => {
+  if (selected_product !== -1) {
     selected_product = -1
-    document.querySelector(".table__body__modal").remove()
+    deleteModals()
   }
 })
