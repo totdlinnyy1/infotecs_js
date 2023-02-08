@@ -1,6 +1,6 @@
 let products
 let selected_product = -1
-const table_body = document.getElementsByClassName("table__body")[0]
+const table_body = document.getElementsByClassName('table__body')[0]
 
 const ratingColor = (rating) => {
   if (rating >= 4.5) return 'green'
@@ -8,7 +8,16 @@ const ratingColor = (rating) => {
   return 'red'
 }
 
-const deleteModals = () => document.querySelectorAll(".table__body__modal").forEach(modal => modal.remove())
+const getNextElement = (cursorPosition, currentElement) => {
+  const currentElementCoord = currentElement.getBoundingClientRect()
+  const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2
+
+  return (cursorPosition < currentElementCenter) ?
+    currentElement :
+    currentElement.nextElementSibling
+}
+
+const deleteModals = () => document.querySelectorAll('.table__body__modal').forEach(modal => modal.remove())
 
 const showPopOut = (table_el, data) => {
   if (data.id !== selected_product) {
@@ -34,7 +43,10 @@ getProducts().then(data => {
   const fetchedProducts = data.products
   products = fetchedProducts
   fetchedProducts.map(product => {
-    table_body.insertAdjacentHTML('beforeend', `<div class="table__body__element" data-id="${product.id}"><p>${product.title}</p></div>`)
+    table_body.insertAdjacentHTML('beforeend',
+      `<div class="table__body__element" 
+                    data-id="${product.id}"
+                    draggable="true"><p>${product.title}</p></div>`)
   })
 })
 
@@ -55,4 +67,39 @@ table_body.addEventListener('mouseleave', (e) => {
     selected_product = -1
     deleteModals()
   }
+})
+
+table_body.addEventListener('dragstart', e => {
+  deleteModals()
+  e.target.classList.add('selected')
+})
+
+table_body.addEventListener('dragend', e => {
+  deleteModals()
+  e.target.classList.remove('selected')
+})
+
+table_body.addEventListener('dragover', e => {
+  e.preventDefault()
+
+  const activeElement = table_body.querySelector('.selected')
+  const currentElement = e.target
+  const isMovable = activeElement !== currentElement &&
+    currentElement.classList.contains('table__body__element')
+
+  if (!isMovable) {
+    return
+  }
+
+  const nextElement = getNextElement(e.clientY, currentElement)
+
+  if (
+    nextElement &&
+    activeElement === nextElement.previousElementSibling ||
+    activeElement === nextElement
+  ) {
+    return
+  }
+
+  table_body.insertBefore(activeElement, nextElement)
 })
