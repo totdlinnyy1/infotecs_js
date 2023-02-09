@@ -5,6 +5,30 @@ const loading_screen = document.getElementsByClassName('loading')[0]
 
 let products
 let selected_product = -1
+const SORT_OPTIONS = {
+  SORT_BY_NAME: 0,
+  SORT_BY_PRICE_ASC: 1,
+  SORT_BY_PRICE_DESC: 2,
+  CUSTOM: 3
+}
+
+const showProducts = (products) => {
+  products.map(product => {
+    table_body.insertAdjacentHTML('beforeend',
+      `<div class="table__body__element" 
+                    data-id="${product.id}"
+                    draggable="true"><p>${product.title}</p></div>`)
+  })
+}
+
+const reshowProducts = (products) => {
+  document.querySelectorAll('.table__body__element').forEach(product => product.remove())
+  showProducts(products)
+}
+
+const enableLoading = () => loading_screen.classList.remove('loaded')
+
+const disableLoading = () => loading_screen.classList.add('loaded')
 
 const showPopOut = (table_el, data) => {
   if (data.id !== selected_product) {
@@ -42,6 +66,12 @@ const getProducts = async () => {
   const response = await fetch('https://dummyjson.com/products')
   return await response.json()
 }
+
+const sortProductsByName = (products) => products.sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0))
+
+const sortProductsByPriceAsc = (products) => products.sort((a,b) => a.price - b.price)
+
+const sortProductsByPriceDesc = (products) => products.sort((a,b) => b.price - a.price)
 
 const preventDefault = (e) => e.preventDefault()
 
@@ -83,13 +113,8 @@ const onLoad = () => {
   getProducts().then(data => {
     const fetchedProducts = data.products
     products = fetchedProducts
-    fetchedProducts.map(product => {
-      table_body.insertAdjacentHTML('beforeend',
-        `<div class="table__body__element" 
-                    data-id="${product.id}"
-                    draggable="true"><p>${product.title}</p></div>`)
-    })
-    loading_screen.classList.add('loaded')
+    showProducts(products)
+    disableLoading()
     enableScroll()
   })
 
@@ -114,6 +139,7 @@ const onLoad = () => {
 
   table_body.addEventListener('dragstart', e => {
     deletePopOuts()
+    sort_select.getElementsByTagName('option')[SORT_OPTIONS.CUSTOM].selected = 'selected'
     e.target.classList.add('selected')
   })
 
@@ -147,10 +173,33 @@ const onLoad = () => {
     table_body.insertBefore(activeElement, nextElement)
   })
 
-  sort_select.addEventListener('change', e => {
-    const selectedOption = sort_select.options[sort_select.selectedIndex]
-    console.log(sort_select.selectedIndex)
-    // TODO make sort by chosen option
+  sort_select.addEventListener('change', () => {
+    switch (sort_select.selectedIndex) {
+      case SORT_OPTIONS.SORT_BY_NAME:
+          enableLoading()
+          disableScroll()
+          products = sortProductsByName(products)
+          reshowProducts(products)
+          enableScroll()
+          disableLoading()
+        break
+      case SORT_OPTIONS.SORT_BY_PRICE_ASC:
+        enableLoading()
+        disableScroll()
+        products = sortProductsByPriceAsc(products)
+        reshowProducts(products)
+        enableScroll()
+        disableLoading()
+        break
+      case SORT_OPTIONS.SORT_BY_PRICE_DESC:
+        enableLoading()
+        disableScroll()
+        products = sortProductsByPriceDesc(products)
+        reshowProducts(products)
+        enableScroll()
+        disableLoading()
+        break
+    }
   })
 }
 

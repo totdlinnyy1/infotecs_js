@@ -8,6 +8,8 @@ body {
 
     font-family: var(--roboto-font);
     font-weight: var(--light-weight);
+
+    overflow-x: hidden;
 }
 
 header {
