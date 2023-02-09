@@ -1,7 +1,8 @@
 const table_body = document.getElementsByClassName('table__body')[0]
 const sort_select = document.getElementsByClassName('select')[0]
 const loading_screen = document.getElementsByClassName('loading')[0]
-
+const count_button = document.getElementsByTagName('button')[0]
+const count_input = document.getElementsByTagName('input')[0]
 
 let products
 let selected_product = -1
@@ -62,8 +63,8 @@ const getNextElement = (cursorPosition, currentElement) => {
     currentElement.nextElementSibling
 }
 
-const getProducts = async () => {
-  const response = await fetch('https://dummyjson.com/products')
+const getProducts = async (limit = 30) => {
+  const response = await fetch(`https://dummyjson.com/products?limit=${limit}`)
   return await response.json()
 }
 
@@ -200,6 +201,27 @@ const onLoad = () => {
         disableLoading()
         break
     }
+  })
+
+  count_button.addEventListener('click', () => {
+    const count = parseInt(count_input.value)
+
+    if (!isFinite(count)) {
+      return
+    }
+
+    if (count < 1) return
+
+    disableScroll()
+    enableLoading()
+    getProducts(count).then(data => {
+      const fetchedProducts = data.products
+      products = fetchedProducts
+      reshowProducts(products)
+      sort_select.getElementsByTagName('option')[SORT_OPTIONS.CUSTOM].selected = 'selected'
+      disableLoading()
+      enableScroll()
+    })
   })
 }
 
