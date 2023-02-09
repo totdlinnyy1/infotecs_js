@@ -13,7 +13,13 @@ const SORT_OPTIONS = {
   SORT_BY_PRICE_DESC: 2,
   CUSTOM: 3
 }
+// getProducts get products data from api
+const getProducts = async (limit = 30) => {
+  const response = await fetch(`https://dummyjson.com/products?limit=${limit}`)
+  return await response.json()
+}
 
+//showProducts get array of products and add it's to table
 const showProducts = (products) => {
   products.map(product => {
     table_body.insertAdjacentHTML('beforeend',
@@ -23,15 +29,25 @@ const showProducts = (products) => {
   })
 }
 
+// reshowProducts get array of products, remove old table elements and add to table new products
 const reshowProducts = (products) => {
   document.querySelectorAll('.table__body__element').forEach(product => product.remove())
   showProducts(products)
 }
 
-const enableLoading = () => loading_screen.classList.remove('loaded')
+// enableLoading show loading screen and disable scroll
+const enableLoading = () => {
+  disableScroll()
+  loading_screen.classList.remove('loaded')
+}
 
-const disableLoading = () => loading_screen.classList.add('loaded')
+// disableLoading hide loading screen and enable scroll
+const disableLoading = () => {
+  loading_screen.classList.add('loaded')
+  enableScroll()
+}
 
+// showPopOut show pop out with product data
 const showPopOut = (table_el, data) => {
   if (data.id !== selected_product) {
     selected_product = data.id
@@ -47,14 +63,17 @@ const showPopOut = (table_el, data) => {
   }
 }
 
+// deletePopOuts hide all pop outs
+const deletePopOuts = () => document.querySelectorAll('.table__body__popout').forEach(modal => modal.remove())
+
+// ratingColor return color by rating
 const ratingColor = (rating) => {
   if (rating >= 4.5) return 'green'
   else if (rating >= 4.0 && rating < 4.5) return 'yellow'
   return 'red'
 }
 
-const deletePopOuts = () => document.querySelectorAll('.table__body__popout').forEach(modal => modal.remove())
-
+// getNextElement get next element when user dragging
 const getNextElement = (cursorPosition, currentElement) => {
   const currentElementCoord = currentElement.getBoundingClientRect()
   const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2
@@ -64,15 +83,13 @@ const getNextElement = (cursorPosition, currentElement) => {
     currentElement.nextElementSibling
 }
 
-const getProducts = async (limit = 30) => {
-  const response = await fetch(`https://dummyjson.com/products?limit=${limit}`)
-  return await response.json()
-}
-
+// sortProductsByName sorting products array by title column
 const sortProductsByName = (products) => products.sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0))
 
+// sortProductsByPriceAsc sorting products array by price asc
 const sortProductsByPriceAsc = (products) => products.sort((a,b) => a.price - b.price)
 
+// sortProductsByPriceDesc sorting products array by price desc
 const sortProductsByPriceDesc = (products) => products.sort((a,b) => b.price - a.price)
 
 const preventDefault = (e) => e.preventDefault()
@@ -96,6 +113,7 @@ const preventDefaultForScrollKeys = (e) => {
 
 const wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel'
 
+// disableScroll disable scroll on page
 const disableScroll = () => {
   window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
   window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
@@ -103,6 +121,7 @@ const disableScroll = () => {
   window.addEventListener('keydown', preventDefaultForScrollKeys, false);
 }
 
+// enableScroll enable scroll on page
 const enableScroll = () => {
   window.removeEventListener('DOMMouseScroll', preventDefault, false);
   window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
@@ -110,6 +129,7 @@ const enableScroll = () => {
   window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
 }
 
+// showErrorNotif showing error notification
 const showErrorNotif = (text) => {
   const notif = `<div class="notif">
                     <p>${text}</p>
@@ -119,15 +139,19 @@ const showErrorNotif = (text) => {
 }
 
 const onLoad = () => {
+  // fetch products from api
   disableScroll()
   getProducts().then(data => {
     const fetchedProducts = data.products
     products = fetchedProducts
+
+    // show products
     showProducts(products)
     disableLoading()
     enableScroll()
   }).catch(err => showErrorNotif(err.message))
 
+  // show pop outs
   table_body.addEventListener('mousemove', e => {
     if (e.target.className === 'table__body__element' || e.target.parentElement.className === 'table__body__element') {
       let productId = e.target.getAttribute('data-id') || e.target.parentElement.getAttribute('data-id')
@@ -140,6 +164,7 @@ const onLoad = () => {
     }
   })
 
+  // hide pop outs
   table_body.addEventListener('mouseleave', (e) => {
     if (selected_product !== -1) {
       selected_product = -1
@@ -147,6 +172,7 @@ const onLoad = () => {
     }
   })
 
+  // drag and drop function
   table_body.addEventListener('dragstart', e => {
     deletePopOuts()
     sort_select.getElementsByTagName('option')[SORT_OPTIONS.CUSTOM].selected = 'selected'
@@ -183,6 +209,7 @@ const onLoad = () => {
     table_body.insertBefore(activeElement, nextElement)
   })
 
+  // change products sort
   sort_select.addEventListener('change', () => {
     switch (sort_select.selectedIndex) {
       case SORT_OPTIONS.SORT_BY_NAME:
@@ -212,6 +239,7 @@ const onLoad = () => {
     }
   })
 
+  // get another count of products
   count_button.addEventListener('click', () => {
     const count = parseInt(count_input.value)
 
