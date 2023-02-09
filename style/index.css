@@ -198,3 +198,15 @@ main {
 .selected {
     opacity: 0.1;
 }
+
+.notif {
+    max-width: 10rem;
+
+    background-color: red;
+    color: white;
+
+    padding: 1rem;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}

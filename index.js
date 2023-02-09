@@ -1,3 +1,4 @@
+const main = document.getElementsByTagName('main')[0]
 const table_body = document.getElementsByClassName('table__body')[0]
 const sort_select = document.getElementsByClassName('select')[0]
 const loading_screen = document.getElementsByClassName('loading')[0]
@@ -102,11 +103,19 @@ const disableScroll = () => {
   window.addEventListener('keydown', preventDefaultForScrollKeys, false);
 }
 
-function enableScroll() {
+const enableScroll = () => {
   window.removeEventListener('DOMMouseScroll', preventDefault, false);
   window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
   window.removeEventListener('touchmove', preventDefault, wheelOpt);
   window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+}
+
+const showErrorNotif = (text) => {
+  const notif = `<div class="notif">
+                    <p>${text}</p>
+                </div>`
+  main.insertAdjacentHTML('beforeend', notif)
+  setTimeout(() => document.querySelector('.notif').remove(), 5000)
 }
 
 const onLoad = () => {
@@ -117,7 +126,7 @@ const onLoad = () => {
     showProducts(products)
     disableLoading()
     enableScroll()
-  })
+  }).catch(err => showErrorNotif(err.message))
 
   table_body.addEventListener('mousemove', e => {
     if (e.target.className === 'table__body__element' || e.target.parentElement.className === 'table__body__element') {
@@ -207,10 +216,14 @@ const onLoad = () => {
     const count = parseInt(count_input.value)
 
     if (!isFinite(count)) {
+      showErrorNotif('Введите число')
       return
     }
 
-    if (count < 1) return
+    if (count < 1) {
+      showErrorNotif('Число должно быть больше нуля')
+      return
+    }
 
     disableScroll()
     enableLoading()
@@ -221,7 +234,7 @@ const onLoad = () => {
       sort_select.getElementsByTagName('option')[SORT_OPTIONS.CUSTOM].selected = 'selected'
       disableLoading()
       enableScroll()
-    })
+    }).catch(err => showErrorNotif(err.message))
   })
 }
 
